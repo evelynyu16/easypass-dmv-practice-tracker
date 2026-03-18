@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { getSavedQuestions } from "../../services/savedQuestionsApi";
+
+import {
+  getSavedQuestions,
+  deleteSavedQuestion,
+  markAsReviewed,
+} from "../../services/savedQuestionsApi";
+
 import SavedQuestionCard from "../../components/SavedQuestionCard/SavedQuestionCard";
 import "./SavedQuestionsPage.css";
 
@@ -8,6 +14,7 @@ function SavedQuestionsPage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Fetching Data Upon Page Load
   useEffect(() => {
     async function loadSavedQuestions() {
       try {
@@ -23,22 +30,58 @@ function SavedQuestionsPage() {
     loadSavedQuestions();
   }, []);
 
-  if (loading) {
-    return <div className="saved-questions-page">Loading saved questions...</div>;
+  // delete
+  async function handleDelete(id) {
+    try {
+      await deleteSavedQuestion(id);
+
+      // Update frontend state
+      setSavedQuestions((prev) => prev.filter((q) => q._id !== id));
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
   }
 
+  // Mark as Reviewed
+  async function handleMarkReviewed(id) {
+    try {
+      await markAsReviewed(id);
+
+      setSavedQuestions((prev) =>
+        prev.map((q) =>
+          q._id === id ? { ...q, isReviewed: true } : q
+        )
+      );
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  }
+
+  // Loading State
+  if (loading) {
+    return <div className="saved-questions-page">Loading...</div>;
+  }
+
+  // Error Status
   if (errorMessage) {
     return <div className="saved-questions-page error-text">{errorMessage}</div>;
   }
 
+  // Render Page
   return (
     <div className="saved-questions-page">
       <h1>Saved Questions</h1>
+
       {savedQuestions.length === 0 ? (
         <p>No saved questions found.</p>
       ) : (
         savedQuestions.map((question) => (
-          <SavedQuestionCard key={question._id} question={question} />
+          <SavedQuestionCard
+            key={question._id}
+            question={question}
+            onDelete={handleDelete}
+            onMarkReviewed={handleMarkReviewed}
+          />
         ))
       )}
     </div>
