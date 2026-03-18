@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Navbar from "./components/Navbar/Navbar";
 import SavedQuestionsPage from "./pages/SavedQuestionsPage/SavedQuestionsPage";
 import MistakeNotebookPage from "./pages/MistakeNotebookPage/MistakeNotebookPage";
 import "./App.css";
@@ -8,10 +9,7 @@ function App() {
 
   return (
     <div>
-      <nav className="app-nav">
-        <button onClick={() => setCurrentPage("saved")}>Saved Questions</button>
-        <button onClick={() => setCurrentPage("mistakes")}>Mistake Notebook</button>
-      </nav>
+      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
 
       {currentPage === "saved" ? <SavedQuestionsPage /> : <MistakeNotebookPage />}
     </div>
