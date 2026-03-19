@@ -10,7 +10,7 @@ function QuizPage() {
   const [question, setQuestion] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [showResult, setShowResult] = useState(false);
-  const [mistakeMessage, setMistakeMessage] = useState("");
+  const [actionMessage, setActionMessage] = useState("");
 
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
@@ -25,7 +25,7 @@ function QuizPage() {
       setQuestion(data);
       setSelectedAnswer("");
       setShowResult(false);
-      setMistakeMessage("");
+      setActionMessage("");
     } catch (error) {
       console.error("Failed to load question:", error);
     }
@@ -45,6 +45,44 @@ function QuizPage() {
     }
   }
 
+  async function handleAddToFavorite() {
+    if (!question) {
+      return;
+    }
+
+    try {
+      const existingQuestions = await getSavedQuestions();
+
+      const alreadyExists = existingQuestions.some(
+        (item) =>
+          item.questionId === question.questionId && item.source === "favorite"
+      );
+
+      if (alreadyExists) {
+        setActionMessage("This question is already in Favorites.");
+        return;
+      }
+
+      const payload = {
+        userId: "demo-user-1",
+        questionId: question.questionId,
+        questionText: question.questionText,
+        topic: question.topic,
+        difficulty: question.difficulty,
+        source: "favorite",
+        isFavorite: true,
+        isReviewed: false,
+        personalNote: "Added from quiz page.",
+      };
+
+      await createSavedQuestion(payload);
+      setActionMessage("Added to Favorites.");
+    } catch (error) {
+      console.error("Failed to add favorite:", error);
+      setActionMessage("Failed to add to Favorites.");
+    }
+  }
+
   async function handleAddToMistake() {
     if (!question) {
       return;
@@ -59,7 +97,7 @@ function QuizPage() {
       );
 
       if (alreadyExists) {
-        setMistakeMessage("This question is already in Mistake Notebook.");
+        setActionMessage("This question is already in Mistake Notebook.");
         return;
       }
 
@@ -76,10 +114,10 @@ function QuizPage() {
       };
 
       await createSavedQuestion(payload);
-      setMistakeMessage("Added to Mistake Notebook.");
+      setActionMessage("Added to Mistake Notebook.");
     } catch (error) {
       console.error("Failed to add mistake question:", error);
-      setMistakeMessage("Failed to add to Mistake Notebook.");
+      setActionMessage("Failed to add to Mistake Notebook.");
     }
   }
 
@@ -88,7 +126,7 @@ function QuizPage() {
     setAnsweredCount(0);
     setSelectedAnswer("");
     setShowResult(false);
-    setMistakeMessage("");
+    setActionMessage("");
     loadQuestion();
   }
 
@@ -134,18 +172,28 @@ function QuizPage() {
                 </p>
               </div>
 
-              <button
-                className="btn btn-warning"
-                onClick={handleAddToMistake}
-              >
-                Add to Mistake
-              </button>
+              <div className="d-flex gap-2">
+                <button
+                  className="btn btn-outline-warning"
+                  onClick={handleAddToFavorite}
+                >
+                  ⭐ Favorite
+                </button>
+
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={handleAddToMistake}
+                >
+                  ⚠️ Mistake
+                </button>
+              </div>
             </div>
 
             <h4 className="mb-3">{question.questionText}</h4>
 
             {question.options.map((option, index) => {
-              let buttonClass = "btn btn-outline-primary w-100 mb-2 text-start";
+              let buttonClass =
+                "btn btn-outline-primary w-100 mb-2 text-start";
 
               if (showResult) {
                 if (option === question.correctAnswer) {
@@ -182,10 +230,8 @@ function QuizPage() {
               </div>
             )}
 
-            {mistakeMessage && (
-              <div className="alert alert-info mt-3 mb-0">
-                {mistakeMessage}
-              </div>
+            {actionMessage && (
+              <div className="alert alert-info mt-3 mb-0">{actionMessage}</div>
             )}
 
             <button className="btn btn-primary mt-4" onClick={loadQuestion}>
