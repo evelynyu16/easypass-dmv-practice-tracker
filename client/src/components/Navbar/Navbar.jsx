@@ -68,6 +68,18 @@ function Navbar() {
         >
           Quiz
         </Link>
+
+        {/* History */}
+        <Link
+          to="/history"
+          className={
+            location.pathname === "/history"
+              ? "btn btn-secondary"
+              : "btn btn-outline-light"
+          }
+        >
+          History
+        </Link>
       </div>
     </nav>
   );

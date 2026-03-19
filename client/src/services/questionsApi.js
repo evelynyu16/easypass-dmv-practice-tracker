@@ -1,7 +1,9 @@
+import { apiUrl } from "./config";
+
 // Get one random question
 export async function getRandomQuestion() {
   try {
-    const response = await fetch("/api/questions/random");
+    const response = await fetch(apiUrl("/api/questions/random"));
 
     if (!response.ok) {
       throw new Error("Failed to fetch random question");

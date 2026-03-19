@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
@@ -10,6 +11,14 @@ const app = express();
 
 // middleware
 app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      "https://easypass-dmv-practice-tracker.vercel.app",
+      /^http:\/\/localhost:\d+$/,
+    ],
+  })
+);
 
 // routes
 app.use("/api/saved-questions", savedQuestionsRoutes);

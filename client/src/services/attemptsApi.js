@@ -1,7 +1,9 @@
+import { apiUrl } from "./config";
+
 // Save quiz attempt
 export async function createAttempt(attemptData) {
   try {
-    const response = await fetch("/api/attempts", {
+    const response = await fetch(apiUrl("/api/attempts"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16,6 +18,21 @@ export async function createAttempt(attemptData) {
     return await response.json();
   } catch (error) {
     console.error("Error saving attempt:", error);
+    throw error;
+  }
+}
+
+export async function getAttempts() {
+  try {
+    const response = await fetch(apiUrl("/api/attempts"));
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch attempts");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching attempts:", error);
     throw error;
   }
 }
