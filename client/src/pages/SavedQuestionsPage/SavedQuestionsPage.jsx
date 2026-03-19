@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-
 import {
   getSavedQuestions,
   deleteSavedQuestion,
   markAsReviewed,
 } from "../../services/savedQuestionsApi";
-
 import SavedQuestionCard from "../../components/SavedQuestionCard/SavedQuestionCard";
 import "./SavedQuestionsPage.css";
 

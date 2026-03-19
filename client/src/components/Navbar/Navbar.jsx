@@ -6,12 +6,9 @@ function Navbar() {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-      <span className="navbar-brand">
-        EasyPass DMV Practice Tracker
-      </span>
+      <span className="navbar-brand">EasyPass DMV Practice Tracker</span>
 
-      <div className="ms-auto d-flex gap-2">
-
+      <div className="ms-auto d-flex gap-2 flex-wrap">
         {/* Saved Questions */}
         <Link
           to="/"
@@ -29,19 +26,19 @@ function Navbar() {
           to="/mistakes"
           className={
             location.pathname === "/mistakes"
-              ? "btn btn-danger"
+              ? "btn btn-warning"
               : "btn btn-outline-light"
           }
         >
           Mistakes
         </Link>
 
-        {/* Favorite Questions */}
+        {/* Favorites */}
         <Link
           to="/favorites"
           className={
             location.pathname === "/favorites"
-              ? "btn btn-warning"
+              ? "btn btn-success"
               : "btn btn-outline-light"
           }
         >
@@ -53,13 +50,24 @@ function Navbar() {
           to="/add-question"
           className={
             location.pathname === "/add-question"
-              ? "btn btn-success"
+              ? "btn btn-info"
               : "btn btn-outline-light"
           }
         >
           Add
         </Link>
 
+        {/* Quiz */}
+        <Link
+          to="/quiz"
+          className={
+            location.pathname === "/quiz"
+              ? "btn btn-dark"
+              : "btn btn-outline-light"
+          }
+        >
+          Quiz
+        </Link>
       </div>
     </nav>
   );

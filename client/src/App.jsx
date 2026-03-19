@@ -4,6 +4,7 @@ import SavedQuestionsPage from "./pages/SavedQuestionsPage/SavedQuestionsPage";
 import MistakeNotebookPage from "./pages/MistakeNotebookPage/MistakeNotebookPage";
 import AddQuestionPage from "./pages/AddQuestionPage/AddQuestionPage";
 import FavoritePage from "./pages/FavoritePage/FavoritePage";
+import QuizPage from "./pages/QuizPage/QuizPage";
 import "./App.css";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/mistakes" element={<MistakeNotebookPage />} />
         <Route path="/add-question" element={<AddQuestionPage />} />
         <Route path="/favorites" element={<FavoritePage />} />
+        <Route path="/quiz" element={<QuizPage />} />
       </Routes>
     </Router>
   );

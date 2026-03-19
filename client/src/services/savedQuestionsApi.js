@@ -1,40 +1,8 @@
-const API_BASE_URL = "/api/saved-questions";
-
 export async function getSavedQuestions() {
-  const response = await fetch(API_BASE_URL);
+  const response = await fetch("/api/saved-questions");
 
   if (!response.ok) {
     throw new Error("Failed to fetch saved questions");
-  }
-
-  return await response.json();
-}
-
-export async function deleteSavedQuestion(id) {
-  const response = await fetch(`/api/saved-questions/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to delete question");
-  }
-
-  return await response.json();
-}
-
-export async function markAsReviewed(id) {
-  const response = await fetch(`/api/saved-questions/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      isReviewed: true,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to update question");
   }
 
   return await response.json();
@@ -51,6 +19,30 @@ export async function createSavedQuestion(newQuestion) {
 
   if (!response.ok) {
     throw new Error("Failed to create saved question");
+  }
+
+  return await response.json();
+}
+
+export async function deleteSavedQuestion(id) {
+  const response = await fetch(`/api/saved-questions/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete saved question");
+  }
+
+  return await response.json();
+}
+
+export async function markAsReviewed(id) {
+  const response = await fetch(`/api/saved-questions/${id}/review`, {
+    method: "PUT",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update question");
   }
 
   return await response.json();

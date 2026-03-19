@@ -4,8 +4,8 @@ import {
   deleteSavedQuestion,
   markAsReviewed,
 } from "../../services/savedQuestionsApi";
-
 import SavedQuestionCard from "../../components/SavedQuestionCard/SavedQuestionCard";
+import "./FavoritePage.css";
 
 function FavoritePage() {
   const [favoriteQuestions, setFavoriteQuestions] = useState([]);
