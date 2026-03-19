@@ -5,7 +5,6 @@ import {
   markAsReviewed,
 } from "../../services/savedQuestionsApi";
 import SavedQuestionCard from "../../components/SavedQuestionCard/SavedQuestionCard";
-import "./MistakeNotebookPage.css";
 
 function MistakeNotebookPage() {
   const [mistakeQuestions, setMistakeQuestions] = useState([]);
@@ -43,9 +42,7 @@ function MistakeNotebookPage() {
     try {
       await markAsReviewed(id);
       setMistakeQuestions((prev) =>
-        prev.map((q) =>
-          q._id === id ? { ...q, isReviewed: true } : q
-        )
+        prev.map((q) => (q._id === id ? { ...q, isReviewed: true } : q))
       );
     } catch (error) {
       console.error("Update failed:", error);

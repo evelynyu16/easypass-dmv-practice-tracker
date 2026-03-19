@@ -1,9 +1,9 @@
-import { apiUrl } from "./config";
-
+// ===============================
 // Get one random question
+// ===============================
 export async function getRandomQuestion() {
   try {
-    const response = await fetch(apiUrl("/api/questions/random"));
+    const response = await fetch("/api/questions/random");
 
     if (!response.ok) {
       throw new Error("Failed to fetch random question");
@@ -16,21 +16,27 @@ export async function getRandomQuestion() {
   }
 }
 
+// ===============================
+// Get question metadata (topics + difficulties)
+// ===============================
 export async function getQuestionMeta() {
   try {
-    const response = await fetch(apiUrl("/api/questions/meta"));
+    const response = await fetch("/api/questions/meta");
 
     if (!response.ok) {
-      throw new Error("Failed to fetch question meta");
+      throw new Error("Failed to fetch metadata");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching question meta:", error);
+    console.error("Error fetching metadata:", error);
     throw error;
   }
 }
 
+// ===============================
+// Get filtered questions (with search + pagination)
+// ===============================
 export async function getQuestions({
   topic = "",
   difficulty = "",
@@ -40,13 +46,15 @@ export async function getQuestions({
 } = {}) {
   try {
     const params = new URLSearchParams();
-    if (topic) params.set("topic", topic);
-    if (difficulty) params.set("difficulty", difficulty);
-    if (q) params.set("q", q);
-    if (page) params.set("page", String(page));
-    if (limit) params.set("limit", String(limit));
 
-    const response = await fetch(apiUrl(`/api/questions?${params.toString()}`));
+    if (topic) params.append("topic", topic);
+    if (difficulty) params.append("difficulty", difficulty);
+    if (q) params.append("q", q);
+
+    params.append("page", page);
+    params.append("limit", limit);
+
+    const response = await fetch(`/api/questions?${params.toString()}`);
 
     if (!response.ok) {
       throw new Error("Failed to fetch questions");

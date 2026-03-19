@@ -20,6 +20,10 @@ function QuizPage() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [isMistake, setIsMistake] = useState(false);
 
+  useEffect(() => {
+    loadQuestion();
+  }, []);
+
   async function loadQuestion() {
     try {
       const data = await getRandomQuestion();
@@ -46,13 +50,6 @@ function QuizPage() {
       console.error("Failed to load question:", error);
     }
   }
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      loadQuestion();
-    }, 0);
-    return () => clearTimeout(t);
-  }, []);
 
   async function handleAnswerClick(option) {
     if (showResult || !question) {
@@ -192,9 +189,7 @@ function QuizPage() {
               <div className="d-flex gap-2">
                 <button
                   className={
-                    isFavorited
-                      ? "btn btn-warning"
-                      : "btn btn-outline-warning"
+                    isFavorited ? "btn btn-warning" : "btn btn-outline-warning"
                   }
                   onClick={handleAddToFavorite}
                   disabled={isFavorited}
@@ -204,9 +199,7 @@ function QuizPage() {
 
                 <button
                   className={
-                    isMistake
-                      ? "btn btn-secondary"
-                      : "btn btn-outline-danger"
+                    isMistake ? "btn btn-secondary" : "btn btn-outline-danger"
                   }
                   onClick={handleAddToMistake}
                   disabled={isMistake}
@@ -219,8 +212,7 @@ function QuizPage() {
             <h4 className="mb-3">{question.questionText}</h4>
 
             {question.options.map((option, index) => {
-              let buttonClass =
-                "btn btn-outline-primary w-100 mb-2 text-start";
+              let buttonClass = "btn btn-outline-primary w-100 mb-2 text-start";
 
               if (showResult) {
                 if (option === question.correctAnswer) {
@@ -258,9 +250,7 @@ function QuizPage() {
             )}
 
             {actionMessage && (
-              <div className="alert alert-info mt-3 mb-0">
-                {actionMessage}
-              </div>
+              <div className="alert alert-info mt-3 mb-0">{actionMessage}</div>
             )}
 
             <button className="btn btn-primary mt-4" onClick={loadQuestion}>

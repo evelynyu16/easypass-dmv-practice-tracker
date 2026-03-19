@@ -1,309 +1,293 @@
 # EasyPass DMV Practice Tracker
 
-**Author**:  Zihan Guo Fanchao Yu
-**Class link**: 5610 Web Development/ https://johnguerra.co/classes/webDevelopment_online_spring_2026/
-
-Client-side rendered React app (hooks) + Node/Express + MongoDB. Users can practice DMV-style questions, track attempts, save questions to favorites/mistakes, and browse/filter the full question bank by topic and difficulty.
+**Authors**: Zihan Guo, Fanchao Yu  
+**Course**: CS5610 Web Development https://johnguerra.co/classes/webDevelopment_online_spring_2026/
 
 ---
 
-## Project objective
+## Project Overview
 
-- Help learners **focus practice** by topic/difficulty.
-- Track performance over time via **attempt history**.
-- Provide lightweight “study lists” via **Favorites** and **Mistake Notebook**.
+EasyPass is a **client-side rendered React application** (using hooks, no server-side rendering) combined with a Node.js/Express backend and MongoDB database.
+
+The system helps users practice DMV-style questions, track performance, and organize study materials using favorites and a mistake notebook.
 
 ---
 
-## Screenshot
+## Project Objectives
 
-![Saved Questions](assets/screenshots/saved-questions.png)
+- Enable focused practice by **topic and difficulty**
+- Track user performance via **attempt history**
+- Support personalized study through **Favorites and Mistake Notebook**
 
-![Practice Quiz](assets/screenshots/quiz.png)
+---
 
-![Add Question](assets/screenshots/add-question.png)
+## Screenshots
 
-![Question Browser](assets/screenshots/question-browser.png)
-
-![History](assets/screenshots/history.png)
-
-![Favorite Questions](assets/screenshots/favorites.png)
-
+![Saved Questions](assets/screenshots/saved-questions.png)  
+![Practice Quiz](assets/screenshots/quiz.png)  
+![Add Question](assets/screenshots/add-question.png)  
+![Question Browser](assets/screenshots/question-browser.png)  
+![History](assets/screenshots/history.png)  
+![Favorite Questions](assets/screenshots/favorites.png)  
 ![Mistake Notebook](assets/screenshots/mistake-notebook.png)
 
 ---
 
-## Deployed app
+## Live Demo
 
-- **Frontend (Vercel)**: `https://easypass-dmv-practice-tracker.vercel.app`  
-- **Backend (Render)**: `https://easypass-dmv-practice-tracker.onrender.com`
+- **Frontend (Vercel)**: https://easypass-dmv-practice-tracker.vercel.app
+- **Backend (Render)**: https://easypass-dmv-practice-tracker.onrender.com
 
 ---
 
-## How to use (for end users)
-
-### 1) Browse the question bank (filter by topic & difficulty)
-
-1. Click **Browse** in the navbar (URL: `/questions`).
-2. Use the filters at the top:
-   - **Search**: type keywords to search in the question text (example: `stop sign`)
-   - **Topic**: choose a topic (example: `Traffic Signals`)
-   - **Difficulty**: choose `easy`, `medium`, or `hard`
-3. Click **Apply** to run the search.
-4. Use **Prev / Next** to move between pages.
-5. Click **Clear filters** to reset back to the full list.
-
-### 2) Practice with Quiz
-
-1. Click **Quiz** in the navbar (URL: `/quiz`).
-2. Read the question and click an answer choice.
-3. You’ll immediately see whether it’s **Correct** or **Incorrect** and the **Correct answer** (if you missed it).
-4. Click **Next Question** to load another random question.
-5. Click **Restart Quiz** to reset your Correct/Total counters.
-
-### 3) Save questions to study later (Favorites / Mistakes)
-
-While on **Quiz**:
-
-- Click **⭐ Favorite** to save the current question to your Favorites list.
-- Click **❌ Mistake** to save the current question to your Mistake Notebook.
-
-### 4) Review saved lists (Saved / Favorites / Mistakes)
-
-1. Click **Saved**, **Favorites**, or **Mistakes** in the navbar.
-2. On each saved question card you can:
-   - **Mark Reviewed** (sets the question as reviewed)
-   - **Delete** (removes it from the list)
-
-### 5) View attempt history
-
-1. Click **History** in the navbar (URL: `/history`).
-2. Review your recent attempts (newest first), including whether each attempt was correct.
-
-## Main Features
+## Features
 
 - Random DMV-style quiz practice
-- Question browser with topic and difficulty filters
-- Search by question text
-- Saved questions system
-- Favorites list
-- Mistake notebook
+- Question browser with filtering and search
+- Save questions to Favorites
+- Mistake Notebook for incorrect questions
 - Attempt history tracking
-- Review status updates for saved questions
-
---- 
-
-## Tech stack
-
-- **Frontend**: React (hooks), React Router, Vite, Bootstrap, PropTypes
-- **AJAX**: Browser `fetch` API (no axios)
-- **Backend**: Node.js, Express, `dotenv`, `cors`
-- **Database**: MongoDB (native driver, `mongodb`)
-- **Tooling**: ESLint (frontend flat config), Prettier (installed in `server` devDependencies)
-- **Deployment**: Vercel (frontend) + Render (backend)
+- Mark questions as reviewed
 
 ---
 
-## Database & collections (MongoDB)
+## How to Use
 
-Database name: `easypass` (see `server/config/db.js`)
+### Browse Questions
 
-Collections used:
+- Navigate to `/questions`
+- Filter by topic, difficulty, or keyword
+- Use pagination controls
 
-- **`questions`**: question bank (seeded with synthetic data; 1000+ records).
-- **`savedQuestions`**: saved items (favorites/mistakes) with notes and review status.
-- **`attempts`**: quiz attempt history.
+### Quiz Mode
 
-Seed script:
+- Navigate to `/quiz`
+- Select an answer
+- Immediate feedback (correct/incorrect)
+- Move to next question or restart quiz
 
-- `server/seedQuestions.js` generates **1000** synthetic questions and inserts into `questions`.
+### Save Questions
+
+- ⭐ Favorite → save to Favorites
+- ❌ Mistake → save to Mistake Notebook
+
+### Review Lists
+
+- Access Saved / Favorites / Mistakes pages
+- Mark questions as reviewed or delete them
+
+### Attempt History
+
+- View past attempts in `/history`
 
 ---
 
-## API overview (AJAX)
+## Tech Stack
 
-Base URL:
+### Frontend
 
-- In production set `VITE_API_BASE_URL` on the frontend, or rely on default in `client/src/services/config.js`.
+- React (hooks)
+- React Router
+- Vite
+- Bootstrap
+- PropTypes
 
-Questions:
+### Backend
 
-- `GET /api/questions/random` — get a random question
-- `GET /api/questions` — list questions with filters + pagination  
-  - query: `topic`, `difficulty`, `q`, `page`, `limit`
-- `GET /api/questions/meta` — topics/difficulties for filter UI
+- Node.js
+- Express
 
-Saved Questions:
+### Database
+
+- MongoDB (native driver)
+
+### Other
+
+- Fetch API (no axios)
+- ESLint
+- Prettier
+
+---
+
+## Database Design
+
+Database: `easypass`
+
+Collections:
+
+- `questions` → question bank (1000+ synthetic records)
+- `savedQuestions` → favorites/mistakes with notes
+- `attempts` → user attempt history
+
+---
+
+## API Endpoints
+
+### Questions
+
+- `GET /api/questions`
+- `GET /api/questions/random`
+- `GET /api/questions/meta`
+
+Example response:
+
+```json
+{
+  "items": [],
+  "total": 1000,
+  "page": 1,
+  "totalPages": 50
+}
+```
+
+### Saved Questions
 
 - `GET /api/saved-questions`
 - `POST /api/saved-questions`
 - `DELETE /api/saved-questions/:id`
 - `PUT /api/saved-questions/:id/review`
 
-Attempts:
+### Attempts
 
 - `GET /api/attempts`
 - `POST /api/attempts`
 
 ---
 
-## React components (hooks)
-
-Examples (each in its own file):
-
-- `client/src/components/Navbar/Navbar.jsx`
-- `client/src/components/SavedQuestionCard/SavedQuestionCard.jsx`
-- `client/src/pages/QuizPage/QuizPage.jsx`
-- `client/src/pages/QuestionBrowserPage/QuestionBrowserPage.jsx`
-
----
-
-## Project structure
+## Project Structure
 
 ```
-client/                 # React frontend (Vite)
+client/
   src/
-    components/         # Reusable UI components (+ per-component CSS)
-    pages/              # Route pages
-    services/           # AJAX helpers (fetch)
+    components/
+    pages/
+    services/
 
-server/                 # Express backend
-  routes/               # Express routers
-  config/               # DB connection config
-  seedQuestions.js      # Generates 1000 synthetic questions
+server/
+  routes/
+  config/
+  seedQuestions.js
 ```
 
-CSS organization:
-
-- Component/page styles live alongside the component/page (e.g. `Navbar.jsx` + `Navbar.css`).
+CSS is organized per component (co-located with JSX files).
 
 ---
 
-## Setup instructions (build & run locally)
+## Setup Instructions
 
 ### Prerequisites
 
-- Node.js (recommend latest LTS)
-- MongoDB connection string (MongoDB Atlas or local MongoDB)
+- Node.js
+- MongoDB (Atlas or local)
 
-### 1) Backend
+---
 
-From `server/`:
+### Backend Setup
 
-1. Install deps:
-
-```bash
+```
 cd server
 npm install
 ```
 
-2. Create environment variables:
+Create `.env`:
 
-- Create `server/.env` (do **not** commit it)
-- Add:
-
-```bash
+```
 MONGO_URI="your-mongodb-connection-string"
 PORT=4000
 ```
 
-3. Start the server:
+Run server:
 
-```bash
+```
 node server.js
 ```
 
-### 2) Seed the database (1000 synthetic questions)
+---
 
-```bash
+### Seed Database
+
+```
 cd server
 node seedQuestions.js
 ```
 
-### 3) Frontend
+---
 
-From `client/`:
+### Frontend Setup
 
-1. Install deps:
-
-```bash
+```
 cd client
 npm install
 ```
 
-2. (Optional) Point frontend to your local backend:
+Optional:
 
-```bash
+```
 VITE_API_BASE_URL="http://localhost:4000"
 ```
 
-3. Start the dev server:
+Run frontend:
 
-```bash
+```
 npm run dev
 ```
 
+---
 
+## Code Quality
+
+### ESLint
+
+```
+cd client
+npx eslint .
+```
+
+### Prettier
+
+```
+npx prettier --write .
+```
 
 ---
 
-## ESLint / Prettier
+## User Personas
 
-- Frontend ESLint: `client/eslint.config.js`  
-  - Run: `cd client && npm run lint`
-- Prettier is installed in `server` (`server/package.json`).  
-  - If you want formatting scripts, add `format` / `check-format` scripts (recommended).
+**1. Busy commuter (Alex, 24)**  
+Wants quick, focused practice sessions.
 
----
+**2. First-time driver (Mei, 17)**  
+Needs repetition and mistake tracking.
 
-
-
-### Project description
-
-EasyPass is a DMV practice tracker that makes it easy to:
-
-- Practice randomized questions
-- Save questions into Favorites / Mistakes for later review
-- Track attempt history over time
-- Browse and filter the full question bank by topic and difficulty
-
-### User personas
-
-1) **Busy commuter (Alex, 24)**  
-Needs short, focused practice sessions on weak areas (e.g., “Traffic Signals”, “Hard”).
-
-2) **First-time driver (Mei, 17)**  
-Wants repetition and a simple mistake notebook to review common errors.
-
-3) **Test retaker (Jordan, 31)**  
-Wants to measure progress, review past attempts, and drill topics that caused failure.
-
-### User stories
-
-- As a learner, I want to **browse and filter questions by topic and difficulty** so I can focus on a specific area.
-- As a learner, I want to **practice a random question** so I can simulate exam conditions.
-- As a learner, I want to **save a question as a favorite** so I can review it later.
-- As a learner, I want to **save questions I missed** so I can build a mistake notebook.
-- As a learner, I want to **see my attempt history** so I can measure improvement over time.
-- As a learner, I want to **mark saved questions as reviewed** so I can track what I’ve already studied.
-
-### Design mockups
-
-Add mockups (hand-drawn or Figma screenshots) to `docs/mockups/` and link them here.
-
-- `docs/mockups/question-browser.png`
-- `docs/mockups/quiz.png`
-- `docs/mockups/saved.png`
-
-Wireframe description:
-
-- **Navbar**: Saved / Mistakes / Favorites / History / Add / Quiz / Browse
-- **Question Browser**: Search + Topic dropdown + Difficulty dropdown + Apply/Clear + results list + pagination
-- **Quiz**: Question card + answer choices + correctness feedback + Favorite/Mistake actions
+**3. Test retaker (Jordan, 31)**  
+Wants to monitor improvement over time.
 
 ---
 
+## User Stories
+
+- Browse and filter questions
+- Practice random questions
+- Save favorites
+- Track mistakes
+- View attempt history
+- Mark reviewed questions
+
+---
+
+## Design Notes
+
+Design is based on a simple and clean layout:
+
+- Navbar for navigation
+- Question cards for interaction
+- Filter panel for browsing
+- Quiz interface with immediate feedback
+
+Screenshots above serve as visual mockups.
+
+---
 
 ## License
 
-MIT License. See `LICENSE`.
+This project is licensed under the MIT License. See the LICENSE file for details.

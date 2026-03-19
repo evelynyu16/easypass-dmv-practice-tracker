@@ -17,7 +17,7 @@ function SavedQuestionsPage() {
     async function loadSavedQuestions() {
       try {
         const data = await getSavedQuestions();
-        setSavedQuestions([...data].reverse()); // 最新在上面
+        setSavedQuestions([...data].reverse()); 
       } catch {
         setErrorMessage("Failed to load saved questions.");
       } finally {
@@ -44,9 +44,7 @@ function SavedQuestionsPage() {
       await markAsReviewed(id);
 
       setSavedQuestions((prev) =>
-        prev.map((q) =>
-          q._id === id ? { ...q, isReviewed: true } : q
-        )
+        prev.map((q) => (q._id === id ? { ...q, isReviewed: true } : q))
       );
     } catch (error) {
       console.error("Update failed:", error);

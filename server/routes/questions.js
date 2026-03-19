@@ -2,101 +2,96 @@ const express = require("express");
 const router = express.Router();
 const connectDB = require("../config/db");
 
-function normalizeString(value) {
-  if (typeof value !== "string") return "";
-  return value.trim();
-}
-
-function parsePositiveInt(value, fallback) {
-  const n = Number.parseInt(String(value), 10);
-  if (!Number.isFinite(n) || n <= 0) return fallback;
-  return n;
-}
-
-router.get("/random", async (req, res) => {
-  try {
-    const db = await connectDB();
-    const collection = db.collection("questions");
-
-    const randomQuestion = await collection.aggregate([{ $sample: { size: 1 } }]).toArray();
-
-    if (!randomQuestion.length) {
-      return res.status(404).json({ message: "No questions found." });
-    }
-
-    res.json(randomQuestion[0]);
-  } catch (error) {
-    console.error("Error fetching random question:", error);
-    res.status(500).json({ message: "Failed to fetch random question." });
-  }
-});
-
-// GET question metadata for filters (topics, difficulties)
+// GET question metadata (topics + difficulties)
 router.get("/meta", async (req, res) => {
   try {
     const db = await connectDB();
-    const collection = db.collection("questions");
+    const questions = db.collection("questions");
 
-    const [topics, difficulties] = await Promise.all([
-      collection.distinct("topic", { topic: { $type: "string" } }),
-      collection.distinct("difficulty", { difficulty: { $type: "string" } }),
-    ]);
+    const topics = await questions.distinct("topic");
+    const difficulties = await questions.distinct("difficulty");
 
     res.json({
       topics: topics.filter(Boolean).sort(),
       difficulties: difficulties.filter(Boolean).sort(),
     });
   } catch (error) {
-    console.error("Error fetching question meta:", error);
-    res.status(500).json({ message: "Failed to fetch question meta." });
+    console.error("Error fetching question metadata:", error);
+    res.status(500).json({ message: "Failed to fetch question metadata" });
   }
 });
 
-// GET questions list with filters + pagination
-// Query params:
-// - topic: exact match
-// - difficulty: exact match
-// - q: text search (regex on questionText)
-// - page: 1-based
-// - limit: page size
+// GET random question
+router.get("/random", async (req, res) => {
+  try {
+    const db = await connectDB();
+    const questions = db.collection("questions");
+
+    const randomQuestion = await questions
+      .aggregate([{ $sample: { size: 1 } }])
+      .toArray();
+
+    if (randomQuestion.length === 0) {
+      return res.status(404).json({ message: "No questions found" });
+    }
+
+    res.json(randomQuestion[0]);
+  } catch (error) {
+    console.error("Error fetching random question:", error);
+    res.status(500).json({ message: "Failed to fetch random question" });
+  }
+});
+
+// GET filtered / paginated / searched question list
 router.get("/", async (req, res) => {
   try {
-    const topic = normalizeString(req.query.topic);
-    const difficulty = normalizeString(req.query.difficulty);
-    const q = normalizeString(req.query.q);
-    const page = parsePositiveInt(req.query.page, 1);
-    const limit = Math.min(parsePositiveInt(req.query.limit, 20), 100);
+    const db = await connectDB();
+    const questions = db.collection("questions");
+
+    const {
+      topic = "",
+      difficulty = "",
+      q = "",
+      page = 1,
+      limit = 20,
+    } = req.query;
 
     const filter = {};
-    if (topic) filter.topic = topic;
-    if (difficulty) filter.difficulty = difficulty;
-    if (q) filter.questionText = { $regex: q, $options: "i" };
 
-    const db = await connectDB();
-    const collection = db.collection("questions");
+    if (topic) {
+      filter.topic = topic;
+    }
 
-    const skip = (page - 1) * limit;
+    if (difficulty) {
+      filter.difficulty = difficulty;
+    }
 
-    const [items, total] = await Promise.all([
-      collection
-        .find(filter)
-        .sort({ questionId: 1 })
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
-      collection.countDocuments(filter),
-    ]);
+    if (q) {
+      filter.questionText = { $regex: q, $options: "i" };
+    }
+
+    const pageNum = Number(page) || 1;
+    const limitNum = Number(limit) || 20;
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await questions.countDocuments(filter);
+
+    const items = await questions
+      .find(filter)
+      .skip(skip)
+      .limit(limitNum)
+      .toArray();
 
     res.json({
       items,
       total,
-      page,
-      limit,
-      totalPages: Math.max(1, Math.ceil(total / limit)),
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.max(1, Math.ceil(total / limitNum)),
     });
   } catch (error) {
     console.error("Error fetching questions:", error);
-    res.status(500).json({ message: "Failed to fetch questions." });
+    res.status(500).json({ message: "Failed to fetch questions" });
   }
 });
 

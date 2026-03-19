@@ -10,7 +10,8 @@ function QuestionBrowserPage() {
 
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("");
-  const [q, setQ] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
 
   const [page, setPage] = useState(1);
   const [data, setData] = useState({
@@ -23,13 +24,16 @@ function QuestionBrowserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [checkedAnswers, setCheckedAnswers] = useState({});
+
   const activeFiltersLabel = useMemo(() => {
     const parts = [];
     if (topic) parts.push(`Topic: ${topic}`);
     if (difficulty) parts.push(`Difficulty: ${difficulty}`);
-    if (q) parts.push(`Search: "${q}"`);
+    if (appliedSearch) parts.push(`Search: "${appliedSearch}"`);
     return parts.length ? parts.join(" • ") : "No filters applied";
-  }, [topic, difficulty, q]);
+  }, [topic, difficulty, appliedSearch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,17 +41,31 @@ function QuestionBrowserPage() {
     async function loadMeta() {
       setMetaLoading(true);
       setMetaError("");
+
       try {
-        const m = await getQuestionMeta();
-        if (!cancelled) setMeta(m);
+        const result = await getQuestionMeta();
+
+        if (!cancelled) {
+          setMeta({
+            topics: Array.isArray(result?.topics) ? result.topics : [],
+            difficulties: Array.isArray(result?.difficulties)
+              ? result.difficulties
+              : [],
+          });
+        }
       } catch {
-        if (!cancelled) setMetaError("Failed to load filter options.");
+        if (!cancelled) {
+          setMetaError("Failed to load filter options.");
+        }
       } finally {
-        if (!cancelled) setMetaLoading(false);
+        if (!cancelled) {
+          setMetaLoading(false);
+        }
       }
     }
 
     loadMeta();
+
     return () => {
       cancelled = true;
     };
@@ -56,42 +74,84 @@ function QuestionBrowserPage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
+    async function loadQuestions() {
       setLoading(true);
       setError("");
+
       try {
-        const res = await getQuestions({
+        const result = await getQuestions({
           topic,
           difficulty,
-          q,
+          q: appliedSearch,
           page,
           limit: DEFAULT_LIMIT,
         });
-        if (!cancelled) setData(res);
+
+        if (!cancelled) {
+          setData({
+            items: Array.isArray(result?.items) ? result.items : [],
+            total: Number(result?.total) || 0,
+            page: Number(result?.page) || 1,
+            limit: Number(result?.limit) || DEFAULT_LIMIT,
+            totalPages: Number(result?.totalPages) || 1,
+          });
+
+          setSelectedAnswers({});
+          setCheckedAnswers({});
+        }
       } catch {
-        if (!cancelled) setError("Failed to load questions.");
+        if (!cancelled) {
+          setError("Failed to load questions.");
+          setData({
+            items: [],
+            total: 0,
+            page: 1,
+            limit: DEFAULT_LIMIT,
+            totalPages: 1,
+          });
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    load();
+    loadQuestions();
+
     return () => {
       cancelled = true;
     };
-  }, [topic, difficulty, q, page]);
+  }, [topic, difficulty, appliedSearch, page]);
 
   function applyFilters(event) {
     event.preventDefault();
     setPage(1);
-    setQ((prev) => prev.trim());
+    setAppliedSearch(searchInput.trim());
   }
 
   function clearFilters() {
     setTopic("");
     setDifficulty("");
-    setQ("");
+    setSearchInput("");
+    setAppliedSearch("");
     setPage(1);
+    setSelectedAnswers({});
+    setCheckedAnswers({});
+  }
+
+  function handleSelectAnswer(questionId, option) {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [questionId]: option,
+    }));
+  }
+
+  function handleCheckAnswer(questionId) {
+    setCheckedAnswers((prev) => ({
+      ...prev,
+      [questionId]: true,
+    }));
   }
 
   const canPrev = page > 1 && !loading;
@@ -106,7 +166,11 @@ function QuestionBrowserPage() {
               <h1 className="mb-1">Question Browser</h1>
               <div className="text-muted">{activeFiltersLabel}</div>
             </div>
-            <button className="btn btn-outline-secondary" onClick={clearFilters}>
+
+            <button
+              className="btn btn-outline-secondary"
+              onClick={clearFilters}
+            >
               Clear filters
             </button>
           </div>
@@ -117,9 +181,9 @@ function QuestionBrowserPage() {
                 <label className="form-label mb-1">Search</label>
                 <input
                   className="form-control"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Search question text…"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Search question text..."
                 />
               </div>
 
@@ -135,9 +199,9 @@ function QuestionBrowserPage() {
                   disabled={metaLoading}
                 >
                   <option value="">All topics</option>
-                  {meta.topics.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+                  {meta.topics.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
                     </option>
                   ))}
                 </select>
@@ -158,9 +222,9 @@ function QuestionBrowserPage() {
                   {(meta.difficulties.length
                     ? meta.difficulties
                     : ["easy", "medium", "hard"]
-                  ).map((d) => (
-                    <option key={d} value={d}>
-                      {d}
+                  ).map((item) => (
+                    <option key={item} value={item}>
+                      {item}
                     </option>
                   ))}
                 </select>
@@ -179,11 +243,13 @@ function QuestionBrowserPage() {
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
             <div className="text-muted">
               {loading ? (
-                "Loading…"
+                "Loading..."
               ) : (
                 <>
                   Showing {(data.items || []).length} of {data.total} questions
-                  {data.totalPages ? ` • Page ${page} / ${data.totalPages}` : ""}
+                  {data.totalPages
+                    ? ` • Page ${page} / ${data.totalPages}`
+                    : ""}
                 </>
               )}
             </div>
@@ -191,15 +257,18 @@ function QuestionBrowserPage() {
             <div className="btn-group">
               <button
                 className="btn btn-outline-primary"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={!canPrev}
+                type="button"
               >
                 Prev
               </button>
+
               <button
                 className="btn btn-outline-primary"
-                onClick={() => setPage((p) => p + 1)}
+                onClick={() => setPage((prev) => prev + 1)}
                 disabled={!canNext}
+                type="button"
               >
                 Next
               </button>
@@ -215,42 +284,115 @@ function QuestionBrowserPage() {
           )}
 
           <div className="d-grid gap-3">
-            {data.items.map((item) => (
-              <div key={item._id || item.questionId} className="card shadow-sm">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                    <div>
-                      <div className="text-muted small mb-1">
-                        <span className="me-2">
-                          <strong>ID:</strong> {item.questionId}
-                        </span>
-                        <span className="me-2">
-                          <strong>Topic:</strong> {item.topic || "—"}
-                        </span>
-                        <span>
-                          <strong>Difficulty:</strong> {item.difficulty || "—"}
-                        </span>
-                      </div>
-                      <div className="fw-semibold">{item.questionText}</div>
-                    </div>
-                  </div>
+            {data.items.map((item) => {
+              const questionKey = item.questionId || item._id;
+              const selectedAnswer = selectedAnswers[questionKey];
+              const checked = checkedAnswers[questionKey];
 
-                  {Array.isArray(item.options) && item.options.length > 0 && (
-                    <div className="mt-3">
-                      <div className="row g-2">
-                        {item.options.map((opt, idx) => (
-                          <div key={`${item.questionId}-${idx}`} className="col-12 col-md-6">
-                            <div className="border rounded p-2 bg-light">
-                              {opt}
-                            </div>
-                          </div>
-                        ))}
+              return (
+                <div
+                  key={item._id || item.questionId}
+                  className="card shadow-sm"
+                >
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                      <div>
+                        <div className="text-muted small mb-1">
+                          <span className="me-2">
+                            <strong>ID:</strong> {item.questionId}
+                          </span>
+                          <span className="me-2">
+                            <strong>Topic:</strong> {item.topic || "—"}
+                          </span>
+                          <span>
+                            <strong>Difficulty:</strong>{" "}
+                            {item.difficulty || "—"}
+                          </span>
+                        </div>
+
+                        <div className="fw-semibold">{item.questionText}</div>
                       </div>
                     </div>
-                  )}
+
+                    {Array.isArray(item.options) && item.options.length > 0 && (
+                      <div className="mt-3">
+                        <div className="row g-2">
+                          {item.options.map((option, index) => {
+                            const isSelected = selectedAnswer === option;
+                            const isCorrect = item.correctAnswer === option;
+
+                            let className =
+                              "w-100 text-start border rounded p-2";
+
+                            if (!checked) {
+                              className += isSelected
+                                ? " bg-primary text-white"
+                                : " bg-light text-dark";
+                            } else {
+                              if (isCorrect) {
+                                className += " bg-success text-white";
+                              } else if (isSelected && !isCorrect) {
+                                className += " bg-danger text-white";
+                              } else {
+                                className += " bg-light text-dark";
+                              }
+                            }
+
+                            return (
+                              <div
+                                key={`${item.questionId}-${index}`}
+                                className="col-12 col-md-6"
+                              >
+                                <button
+                                  type="button"
+                                  className={className}
+                                  onClick={() => {
+                                    if (!checked) {
+                                      handleSelectAnswer(questionKey, option);
+                                    }
+                                  }}
+                                  style={{
+                                    cursor: checked ? "default" : "pointer",
+                                  }}
+                                >
+                                  {option}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="mt-3 d-flex gap-2 flex-wrap align-items-center">
+                          <button
+                            type="button"
+                            className="btn btn-outline-primary"
+                            onClick={() => handleCheckAnswer(questionKey)}
+                            disabled={!selectedAnswer || checked}
+                          >
+                            Check Answer
+                          </button>
+
+                          {checked && (
+                            <div>
+                              {selectedAnswer === item.correctAnswer ? (
+                                <span className="text-success fw-semibold">
+                                  ✅ Correct
+                                </span>
+                              ) : (
+                                <span className="text-danger fw-semibold">
+                                  ❌ Incorrect. Correct answer:{" "}
+                                  {item.correctAnswer}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -259,4 +401,3 @@ function QuestionBrowserPage() {
 }
 
 export default QuestionBrowserPage;
-

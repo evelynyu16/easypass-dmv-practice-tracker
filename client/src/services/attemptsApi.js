@@ -1,5 +1,3 @@
-import { apiUrl } from "./config";
-
 // Save quiz attempt
 export async function createAttempt(attemptData) {
   try {
