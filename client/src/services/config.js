@@ -1,3 +1,1 @@
-const BASE_URL = "https://easypass-dmv-practice-tracker.onrender.com";
-
-export default BASE_URL;
+export const API_BASE = "https://easypass-dmv-practice-tracker.onrender.com";
