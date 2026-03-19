@@ -1,7 +1,7 @@
 # EasyPass DMV Practice Tracker
 
-**Author**: _Your Name Here_  
-**Class link**: _Paste your class / assignment link here_  
+**Author**:  Zihan Guo Fanchao Yu
+**Class link**: 5610 Web Development/ https://johnguerra.co/classes/webDevelopment_online_spring_2026/
 
 Client-side rendered React app (hooks) + Node/Express + MongoDB. Users can practice DMV-style questions, track attempts, save questions to favorites/mistakes, and browse/filter the full question bank by topic and difficulty.
 
@@ -32,19 +32,65 @@ Add a screenshot here after you capture one:
 
 ## How to use (for end users)
 
-- **Browse**: Go to **Browse** in the navbar to filter questions by **Topic** and **Difficulty** (and search by text).
-- **Quiz**: Practice questions one at a time; results show correct/incorrect.
-- **Save**: Add the current quiz question to **Favorites** or **Mistakes**.
-- **Review**: Open **Saved**, **Favorites**, or **Mistakes** to review, delete, and mark items as reviewed.
-- **History**: See your attempt history.
+### 1) Browse the question bank (filter by topic & difficulty)
 
----
+1. Click **Browse** in the navbar (URL: `/questions`).
+2. Use the filters at the top:
+   - **Search**: type keywords to search in the question text (example: `stop sign`)
+   - **Topic**: choose a topic (example: `Traffic Signals`)
+   - **Difficulty**: choose `easy`, `medium`, or `hard`
+3. Click **Apply** to run the search.
+4. Use **Prev / Next** to move between pages.
+5. Click **Clear filters** to reset back to the full list.
+
+### 2) Practice with Quiz
+
+1. Click **Quiz** in the navbar (URL: `/quiz`).
+2. Read the question and click an answer choice.
+3. You’ll immediately see whether it’s **Correct** or **Incorrect** and the **Correct answer** (if you missed it).
+4. Click **Next Question** to load another random question.
+5. Click **Restart Quiz** to reset your Correct/Total counters.
+
+### 3) Save questions to study later (Favorites / Mistakes)
+
+While on **Quiz**:
+
+- Click **⭐ Favorite** to save the current question to your Favorites list.
+- Click **❌ Mistake** to save the current question to your Mistake Notebook.
+
+### 4) Review saved lists (Saved / Favorites / Mistakes)
+
+1. Click **Saved**, **Favorites**, or **Mistakes** in the navbar.
+2. On each saved question card you can:
+   - **Mark Reviewed** (sets the question as reviewed)
+   - **Delete** (removes it from the list)
+
+### 5) View attempt history
+
+1. Click **History** in the navbar (URL: `/history`).
+2. Review your recent attempts (newest first), including whether each attempt was correct.
+
+## Main Features
+
+- Random DMV-style quiz practice
+- Question browser with topic and difficulty filters
+- Search by question text
+- Saved questions system
+- Favorites list
+- Mistake notebook
+- Attempt history tracking
+- Review status updates for saved questions
+
+--- 
 
 ## Tech stack
 
-- **Frontend**: React (hooks), React Router, Bootstrap, Vite
-- **Backend**: Node.js, Express
-- **Database**: MongoDB (native driver)
+- **Frontend**: React (hooks), React Router, Vite, Bootstrap, PropTypes
+- **AJAX**: Browser `fetch` API (no axios)
+- **Backend**: Node.js, Express, `dotenv`, `cors`
+- **Database**: MongoDB (native driver, `mongodb`)
+- **Tooling**: ESLint (frontend flat config), Prettier (installed in `server` devDependencies)
+- **Deployment**: Vercel (frontend) + Render (backend)
 
 ---
 
@@ -187,7 +233,7 @@ VITE_API_BASE_URL="http://localhost:4000"
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
+
 
 ---
 
@@ -200,7 +246,7 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 
 ---
 
-## Design document (rubric)
+
 
 ### Project description
 
@@ -247,33 +293,7 @@ Wireframe description:
 
 ---
 
-## Rubric alignment notes (be honest)
-
-- **Uses Node + Express**: Yes (`server/server.js`)
-- **Uses MongoDB**: Yes (native driver; see `server/config/db.js`)
-- **At least 2 Mongo collections + CRUD**: Yes (multiple collections; full CRUD on `savedQuestions`)
-- **1000 synthetic records**: Yes (`server/seedQuestions.js`)
-- **ESLint config & no errors**: Frontend uses `client/eslint.config.js` and should pass `npm run lint`
-- **React components with hooks**: Yes (multiple pages/components use hooks)
-- **MIT license**: Included as `LICENSE` (update copyright name)
-
-Important (rubric-specific):
-
-- This project currently uses **`cors`** on the backend (`server/package.json`).  
-  If your class rubric prohibits CORS, remove it and adjust deployment/proxy strategy accordingly.
-- Authentication with **Passport** is **not implemented** in this codebase. If your rubric requires it, it must be added.
-
----
-
-## Video demo
-
-Add your narrated demo video link here:
-
-- _YouTube / Google Drive link_
-
----
 
 ## License
 
 MIT License. See `LICENSE`.
-
