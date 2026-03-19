@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://easypass-dmv-practice-tracker.onrender.com/api/$1"
+    }
+  ]
+}
