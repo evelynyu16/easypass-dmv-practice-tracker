@@ -12,6 +12,9 @@ function QuizPage() {
   const [showResult, setShowResult] = useState(false);
   const [mistakeMessage, setMistakeMessage] = useState("");
 
+  const [correctCount, setCorrectCount] = useState(0);
+  const [answeredCount, setAnsweredCount] = useState(0);
+
   useEffect(() => {
     loadQuestion();
   }, []);
@@ -29,8 +32,17 @@ function QuizPage() {
   }
 
   function handleAnswerClick(option) {
+    if (showResult || !question) {
+      return;
+    }
+
     setSelectedAnswer(option);
     setShowResult(true);
+    setAnsweredCount((prev) => prev + 1);
+
+    if (option === question.correctAnswer) {
+      setCorrectCount((prev) => prev + 1);
+    }
   }
 
   async function handleAddToMistake() {
@@ -71,6 +83,15 @@ function QuizPage() {
     }
   }
 
+  function handleRestartQuiz() {
+    setCorrectCount(0);
+    setAnsweredCount(0);
+    setSelectedAnswer("");
+    setShowResult(false);
+    setMistakeMessage("");
+    loadQuestion();
+  }
+
   if (!question) {
     return <div className="container mt-4">Loading...</div>;
   }
@@ -82,7 +103,25 @@ function QuizPage() {
           <h1 className="text-center mb-4">Practice Quiz</h1>
 
           <div className="card p-4 shadow-sm">
-            <div className="d-flex justify-content-between align-items-start mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <div>
+                <span className="badge bg-success me-2">
+                  Correct: {correctCount}
+                </span>
+                <span className="badge bg-secondary">
+                  Total Answered: {answeredCount}
+                </span>
+              </div>
+
+              <button
+                className="btn btn-outline-secondary"
+                onClick={handleRestartQuiz}
+              >
+                Restart Quiz
+              </button>
+            </div>
+
+            <div className="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
               <div>
                 <p className="mb-1">
                   <strong>Question ID:</strong> {question.questionId}
