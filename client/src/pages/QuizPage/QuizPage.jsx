@@ -17,13 +17,8 @@ function QuizPage() {
 
   const [actionMessage, setActionMessage] = useState("");
 
- 
   const [isFavorited, setIsFavorited] = useState(false);
   const [isMistake, setIsMistake] = useState(false);
-
-  useEffect(() => {
-    loadQuestion();
-  }, []);
 
   async function loadQuestion() {
     try {
@@ -52,36 +47,43 @@ function QuizPage() {
     }
   }
 
+  useEffect(() => {
+    const t = setTimeout(() => {
+      loadQuestion();
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+
   async function handleAnswerClick(option) {
-  if (showResult || !question) {
-    return;
+    if (showResult || !question) {
+      return;
+    }
+
+    setSelectedAnswer(option);
+    setShowResult(true);
+    setAnsweredCount((prev) => prev + 1);
+
+    const isCorrect = option === question.correctAnswer;
+
+    if (isCorrect) {
+      setCorrectCount((prev) => prev + 1);
+    }
+
+    try {
+      await createAttempt({
+        userId: "demo-user-1",
+        questionId: question.questionId,
+        questionText: question.questionText,
+        selectedAnswer: option,
+        correctAnswer: question.correctAnswer,
+        isCorrect,
+        topic: question.topic,
+        difficulty: question.difficulty,
+      });
+    } catch (error) {
+      console.error("Failed to save attempt:", error);
+    }
   }
-
-  setSelectedAnswer(option);
-  setShowResult(true);
-  setAnsweredCount((prev) => prev + 1);
-
-  const isCorrect = option === question.correctAnswer;
-
-  if (isCorrect) {
-    setCorrectCount((prev) => prev + 1);
-  }
-
-  try {
-    await createAttempt({
-      userId: "demo-user-1",
-      questionId: question.questionId,
-      questionText: question.questionText,
-      selectedAnswer: option,
-      correctAnswer: question.correctAnswer,
-      isCorrect,
-      topic: question.topic,
-      difficulty: question.difficulty,
-    });
-  } catch (error) {
-    console.error("Failed to save attempt:", error);
-  }
-}
 
   async function handleAddToFavorite() {
     if (!question || isFavorited) return;

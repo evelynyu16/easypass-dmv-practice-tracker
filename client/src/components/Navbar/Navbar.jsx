@@ -10,6 +10,17 @@ function Navbar() {
 
       <div className="ms-auto d-flex gap-2 flex-wrap">
         <Link
+          to="/questions"
+          className={
+            location.pathname === "/questions"
+              ? "btn btn-light"
+              : "btn btn-outline-light"
+          }
+        >
+          Browse
+        </Link>
+
+        <Link
           to="/"
           className={
             location.pathname === "/"
