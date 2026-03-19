@@ -1,9 +1,7 @@
-import { API_BASE } from "./config";
-
 // Get one random question
 export async function getRandomQuestion() {
   try {
-    const response = await fetch(`${API_BASE}/api/questions/random`);
+    const response = await fetch("/api/questions/random");
 
     if (!response.ok) {
       throw new Error("Failed to fetch random question");

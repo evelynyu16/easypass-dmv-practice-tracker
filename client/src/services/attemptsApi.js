@@ -1,9 +1,7 @@
-import { API_BASE } from "./config";
-
 // Save quiz attempt
 export async function createAttempt(attemptData) {
   try {
-    const response = await fetch(`${API_BASE}/api/attempts`, {
+    const response = await fetch("/api/attempts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
