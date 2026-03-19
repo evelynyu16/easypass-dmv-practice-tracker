@@ -17,9 +17,19 @@ Client-side rendered React app (hooks) + Node/Express + MongoDB. Users can pract
 
 ## Screenshot
 
-Add a screenshot here after you capture one:
+![Saved Questions](assets/screenshots/saved-questions.png)
 
-- `docs/screenshot.png`
+![Practice Quiz](assets/screenshots/quiz.png)
+
+![Add Question](assets/screenshots/add-question.png)
+
+![Question Browser](assets/screenshots/question-browser.png)
+
+![History](assets/screenshots/history.png)
+
+![Favorite Questions](assets/screenshots/favorites.png)
+
+![Mistake Notebook](assets/screenshots/mistake-notebook.png)
 
 ---
 
